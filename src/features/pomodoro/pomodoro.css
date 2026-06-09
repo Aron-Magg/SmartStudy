@@ -1,0 +1,240 @@
+.smart-pomodoro {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.smart-pomodoro-header h2 {
+  margin: 0 0 12px 0;
+}
+
+.smart-pomodoro-modes {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.smart-pomodoro-mode {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.smart-pomodoro-mode.is-active {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.smart-pomodoro-mode:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.smart-pomodoro-card {
+  padding: 18px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 10px;
+  background: var(--background-secondary);
+  text-align: center;
+}
+
+.smart-pomodoro-mode-label {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.smart-pomodoro-ring {
+  position: relative;
+  height: 12px;
+  background: var(--background-modifier-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 12px 0 16px;
+}
+
+.smart-pomodoro-ring-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: var(--interactive-accent);
+  transition: width 0.25s linear;
+}
+
+.smart-pomodoro-ring-fill[data-mode="shortBreak"],
+.smart-pomodoro-ring-fill[data-mode="longBreak"] {
+  background: var(--color-green, #22c55e);
+}
+
+.smart-pomodoro-time {
+  position: relative;
+  font-size: 3em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  margin-top: 8px;
+}
+
+.smart-pomodoro-status {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+.smart-pomodoro-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.smart-pomodoro-actions button {
+  flex: 1;
+  min-width: 100px;
+}
+
+.smart-pomodoro-skip {
+  flex: 0 0 auto !important;
+  min-width: 60px !important;
+}
+
+.smart-pomodoro-sessions {
+  margin-top: 12px;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.smart-pomodoro-footer {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.smart-pomodoro-link {
+  background: none;
+  border: none;
+  color: var(--text-accent);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+/* ---------- Stats dashboard ---------- */
+
+.smart-pomodoro-stats {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.smart-pomodoro-stats-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.smart-pomodoro-stats-header h2 {
+  margin: 0;
+}
+
+.smart-pomodoro-stats-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.smart-pomodoro-stats-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.smart-pomodoro-stat-tile {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.smart-pomodoro-stat-label {
+  font-size: 0.75em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.smart-pomodoro-stat-value {
+  font-size: 1.4em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+.smart-pomodoro-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.smart-pomodoro-stats-card {
+  padding: 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.smart-pomodoro-recent h3 {
+  margin: 16px 0 8px;
+}
+
+.smart-pomodoro-recent-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.smart-pomodoro-recent-table th,
+.smart-pomodoro-recent-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  text-align: left;
+}
+
+.smart-pomodoro-tag-ok {
+  color: var(--color-green, #22c55e);
+}
+
+.smart-pomodoro-tag-warn {
+  color: var(--color-orange, #f59e0b);
+}
+
+/* ---------- Status bar widget ---------- */
+
+.smart-pomodoro-statusbar {
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.smart-pomodoro-statusbar.is-running {
+  color: var(--interactive-accent);
+}
+
+.smart-pomodoro-statusbar.is-paused {
+  color: var(--text-muted);
+  font-style: italic;
+}

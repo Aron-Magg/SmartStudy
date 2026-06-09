@@ -1,0 +1,9 @@
+{
+  "id": "smart-study",
+  "name": "Smart Study",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Per-folder uv venv Jupyter execution, HTML lectures, AI quiz agent, venv inspector.",
+  "author": "Aron",
+  "isDesktopOnly": true
+}

@@ -1,0 +1,66 @@
+/* Smart Study — global styles. Feature-specific styles inlined per feature folder. */
+
+.smart-study-section-title {
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0.5em 0 0.25em;
+}
+
+.smart-study-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 1em;
+  text-align: center;
+}
+
+.smart-study-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.smart-study-table th,
+.smart-study-table td {
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.smart-study-table th {
+  cursor: pointer;
+  user-select: none;
+}
+
+.smart-study-table th:hover {
+  color: var(--text-accent);
+}
+
+.smart-study-table tbody tr:hover {
+  background: var(--background-modifier-hover);
+}
+
+.smart-study-pill {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 0.75em;
+  background: var(--background-modifier-border);
+}
+
+.smart-study-pill.smart-study-pill-ok {
+  background: var(--color-green);
+  color: white;
+}
+
+.smart-study-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.smart-study-toolbar button {
+  padding: 4px 10px;
+}

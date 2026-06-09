@@ -1,0 +1,36 @@
+.smart-html-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+.smart-html-toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+  align-items: center;
+  font-size: 0.85em;
+}
+
+.smart-html-path {
+  font-family: var(--font-monospace);
+  color: var(--text-muted);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.smart-html-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: white;
+}
+
+.smart-html-link-resolved {
+  color: var(--text-accent);
+}
