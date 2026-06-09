@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Assemble release artifacts
+        run: |
+          mkdir smart-study
+          cp main.js manifest.json smart-study/
+          cp main.css smart-study/styles.css
+          zip -r smart-study-${{ github.ref_name }}.zip smart-study
+
+      - name: Verify manifest version matches tag
+        run: |
+          MANIFEST_VERSION=$(node -p "require('./manifest.json').version")
+          if [ "$MANIFEST_VERSION" != "${{ github.ref_name }}" ]; then
+            echo "manifest.json version ($MANIFEST_VERSION) does not match tag (${{ github.ref_name }})." >&2
+            exit 1
+          fi
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            smart-study/main.js
+            smart-study/manifest.json
+            smart-study/styles.css
+            smart-study-${{ github.ref_name }}.zip
+          fail_on_unmatched_files: true
+          generate_release_notes: true

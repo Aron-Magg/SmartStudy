@@ -1,18 +1,32 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
-import { copyFile, mkdir, readFile, readdir, writeFile } from "fs/promises";
+import { access, copyFile, mkdir, readFile, readdir, writeFile } from "fs/promises";
 import { dirname, resolve, join } from "path";
 
 const prod = process.argv[2] === "production";
 
-const VAULT_PLUGIN_DIR = resolve(
-  process.cwd(),
-  "..",
-  ".obsidian",
-  "plugins",
-  "smart-study",
-);
+async function pathExists(p) {
+  try { await access(p); return true; } catch { return false; }
+}
+
+async function resolveVaultPluginDir() {
+  const manifest = JSON.parse(
+    await readFile(resolve(process.cwd(), "manifest.json"), "utf8"),
+  );
+  const pluginId = manifest.id;
+  if (process.env.VAULT_PATH) {
+    return resolve(process.env.VAULT_PATH, ".obsidian", "plugins", pluginId);
+  }
+  // Fallback for the in-vault layout (source lives next to .obsidian/)
+  const sibling = resolve(process.cwd(), "..", ".obsidian");
+  if (await pathExists(sibling)) {
+    return resolve(sibling, "plugins", pluginId);
+  }
+  return null;
+}
+
+const VAULT_PLUGIN_DIR = await resolveVaultPluginDir();
 
 async function collectCss(rootCss) {
   const featureRoot = resolve(process.cwd(), "src", "features");
@@ -45,13 +59,19 @@ const copyToVault = {
       const combinedCss = await collectCss(resolve(process.cwd(), "styles.css"));
       const builtCssPath = resolve(process.cwd(), "main.css");
       await writeFile(builtCssPath, combinedCss, "utf8");
+      const ts = new Date().toISOString().slice(11, 19);
+      if (!VAULT_PLUGIN_DIR) {
+        console.log(
+          `[${ts}] build done. No vault detected — set VAULT_PATH=/path/to/your/vault to auto-install.`,
+        );
+        return;
+      }
       await mkdir(VAULT_PLUGIN_DIR, { recursive: true });
       await Promise.all([
         copyFile("main.js", resolve(VAULT_PLUGIN_DIR, "main.js")),
         copyFile("manifest.json", resolve(VAULT_PLUGIN_DIR, "manifest.json")),
         writeFile(resolve(VAULT_PLUGIN_DIR, "styles.css"), combinedCss, "utf8"),
       ]);
-      const ts = new Date().toISOString().slice(11, 19);
       console.log(`[${ts}] copied to ${VAULT_PLUGIN_DIR}`);
     });
   },

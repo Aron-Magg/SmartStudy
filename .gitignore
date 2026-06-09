@@ -5,6 +5,9 @@ node_modules/
 main.js
 main.js.map
 main.css
+dist/
+smart-study/
+smart-study-*.zip
 
 # Packaged releases
 *.tgz

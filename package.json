@@ -5,8 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "build": "node esbuild.config.mjs production",
-    "install-to-vault": "node esbuild.config.mjs production && node scripts/install.mjs"
+    "build": "node esbuild.config.mjs production"
   },
   "keywords": [],
   "author": "Aron",
