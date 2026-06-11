@@ -52,6 +52,10 @@ export default class SmartStudyPlugin extends Plugin {
       await this.registerYoutubeEmbed().catch(
         this.warnFeatureFailure("YouTube embed"),
       );
+    if (this.settings.features.pythonViewer)
+      await this.registerPythonViewer().catch(
+        this.warnFeatureFailure("Python viewer"),
+      );
 
     this.addSettingTab(new SmartStudySettingsTab(this.app, this));
   }
@@ -173,6 +177,12 @@ export default class SmartStudyPlugin extends Plugin {
   private async registerYoutubeEmbed(): Promise<void> {
     const mod = await import("./features/youtube-embed/register");
     mod.registerYoutubeEmbedFeature(this);
+  }
+
+  /* ---------- Feature H: Python viewer (registered in registerPythonViewer) ---------- */
+  private async registerPythonViewer(): Promise<void> {
+    const mod = await import("./features/python-viewer/register");
+    mod.registerPythonViewerFeature(this);
   }
 }
 

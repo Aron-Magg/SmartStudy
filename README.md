@@ -44,6 +44,7 @@ Jupyter notebooks with per-folder venvs, HTML and PDF lecture viewers, AI-genera
 | **Venv inspector** | List, inspect, and clean the Python venvs created by the Notebook feature. |
 | **HTML asset linker** | Keeps inline asset references resolvable when notes move within the vault. |
 | **YouTube embed** | Paste a YouTube link on its own line in a note and it renders as an inline 16:9 player in reading mode. Supports `youtu.be`, Shorts, Live, timestamps (`?t=1m30s`), and playlists. |
+| **Python viewer** | Open `.py` / `.pyi` / `.pyx` files inside Obsidian with full Python syntax highlighting. Click the preview to edit; blur or Escape to switch back. No external editor needed. |
 
 ## Installation
 
@@ -179,7 +180,8 @@ src/
 │   ├── pomodoro/
 │   ├── venv-inspector/
 │   ├── html-asset-linker/
-│   └── youtube-embed/
+│   ├── youtube-embed/
+│   └── python-viewer/
 ├── services/           Cross-feature services (AI, Jupyter, venv, stats…)
 ├── lib/                Pure utilities (schemas, shell helpers, TOML…)
 ├── settings/           Settings UI and persistence

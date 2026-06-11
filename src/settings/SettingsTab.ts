@@ -15,6 +15,7 @@ export interface SmartStudySettings {
     pomodoro: boolean;
     htmlAssetLinker: boolean;
     youtubeEmbed: boolean;
+    pythonViewer: boolean;
   };
   ai: {
     provider: AIProviderId;
@@ -64,6 +65,7 @@ export const DEFAULT_SETTINGS: SmartStudySettings = {
     pomodoro: true,
     htmlAssetLinker: true,
     youtubeEmbed: true,
+    pythonViewer: true,
   },
   ai: {
     provider: "anthropic",
@@ -167,6 +169,7 @@ export class SmartStudySettingsTab extends PluginSettingTab {
       ["pomodoro", "Pomodoro timer & study stats"],
       ["htmlAssetLinker", "Auto-link HTML assets in graph"],
       ["youtubeEmbed", "Embed YouTube videos from pasted links"],
+      ["pythonViewer", "Open Python files (.py / .pyi / .pyx) with syntax highlighting"],
     ] as const) {
       new Setting(containerEl).setName(label).addToggle((t) =>
         t
