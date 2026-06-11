@@ -48,6 +48,10 @@ export default class SmartStudyPlugin extends Plugin {
       await this.registerHtmlAssetLinker().catch(
         this.warnFeatureFailure("HTML asset linker"),
       );
+    if (this.settings.features.youtubeEmbed)
+      await this.registerYoutubeEmbed().catch(
+        this.warnFeatureFailure("YouTube embed"),
+      );
 
     this.addSettingTab(new SmartStudySettingsTab(this.app, this));
   }
@@ -163,6 +167,12 @@ export default class SmartStudyPlugin extends Plugin {
   private async registerHtmlAssetLinker(): Promise<void> {
     const mod = await import("./features/html-asset-linker/register");
     mod.registerHtmlAssetLinker(this);
+  }
+
+  /* ---------- Feature G: YouTube embed (registered in registerYoutubeEmbed) ---------- */
+  private async registerYoutubeEmbed(): Promise<void> {
+    const mod = await import("./features/youtube-embed/register");
+    mod.registerYoutubeEmbedFeature(this);
   }
 }
 

@@ -14,6 +14,7 @@ export interface SmartStudySettings {
     venvInspector: boolean;
     pomodoro: boolean;
     htmlAssetLinker: boolean;
+    youtubeEmbed: boolean;
   };
   ai: {
     provider: AIProviderId;
@@ -34,6 +35,9 @@ export interface SmartStudySettings {
   };
   html: {
     disableScripts: boolean;
+  };
+  youtube: {
+    privacyMode: boolean;
   };
   pomodoro: {
     workMinutes: number;
@@ -59,6 +63,7 @@ export const DEFAULT_SETTINGS: SmartStudySettings = {
     venvInspector: true,
     pomodoro: true,
     htmlAssetLinker: true,
+    youtubeEmbed: true,
   },
   ai: {
     provider: "anthropic",
@@ -79,6 +84,9 @@ export const DEFAULT_SETTINGS: SmartStudySettings = {
   },
   html: {
     disableScripts: false,
+  },
+  youtube: {
+    privacyMode: true,
   },
   pomodoro: {
     workMinutes: 25,
@@ -152,6 +160,7 @@ export class SmartStudySettingsTab extends PluginSettingTab {
       ["venvInspector", "Venv inspector"],
       ["pomodoro", "Pomodoro timer & study stats"],
       ["htmlAssetLinker", "Auto-link HTML assets in graph"],
+      ["youtubeEmbed", "Embed YouTube videos from pasted links"],
     ] as const) {
       new Setting(containerEl).setName(label).addToggle((t) =>
         t
@@ -376,6 +385,20 @@ export class SmartStudySettingsTab extends PluginSettingTab {
       .addToggle((t) =>
         t.setValue(s.html.disableScripts).onChange(async (v) => {
           s.html.disableScripts = v;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    containerEl.createEl("h3", { text: "YouTube" });
+
+    new Setting(containerEl)
+      .setName("Privacy-enhanced mode")
+      .setDesc(
+        "Embed via youtube-nocookie.com instead of youtube.com. Recommended.",
+      )
+      .addToggle((t) =>
+        t.setValue(s.youtube.privacyMode).onChange(async (v) => {
+          s.youtube.privacyMode = v;
           await this.plugin.saveSettings();
         }),
       );
