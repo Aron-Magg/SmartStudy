@@ -1,4 +1,4 @@
-import { Component, MarkdownRenderer } from "obsidian";
+import { App, Component, MarkdownRenderer } from "obsidian";
 import {
   CellOutput,
   NotebookCell,
@@ -14,6 +14,7 @@ export interface CellRenderHooks {
   onInsertBelow: () => void;
   filePath: string;
   obsidianComponent: Component;
+  app: App;
 }
 
 export class CellRenderer {
@@ -74,10 +75,56 @@ export class CellRenderer {
 
   private renderCodeEditor(parent: HTMLElement): void {
     const wrap = parent.createDiv({ cls: "smart-cell-code-wrap" });
+    const rendered = wrap.createDiv({ cls: "smart-cell-code-rendered" });
     const editor = wrap.createEl("textarea", { cls: "smart-cell-code" });
     editor.value = cellSourceToString(this.cell.source);
-    autosize(editor);
     editor.spellcheck = false;
+
+    const renderHighlight = () => {
+      rendered.empty();
+      const code = editor.value;
+      if (!code.trim()) {
+        rendered.createDiv({
+          cls: "smart-cell-empty",
+          text: "Click to add code…",
+        });
+        return;
+      }
+      void MarkdownRenderer.render(
+        this.hooks.app,
+        "```python\n" + code + "\n```",
+        rendered,
+        this.hooks.filePath,
+        this.hooks.obsidianComponent,
+      );
+    };
+
+    const enterEdit = () => {
+      rendered.style.display = "none";
+      editor.style.display = "block";
+      autosize(editor);
+      editor.focus();
+    };
+
+    const leaveEdit = () => {
+      this.hooks.onSourceChange(editor.value);
+      editor.style.display = "none";
+      rendered.style.display = "";
+      renderHighlight();
+    };
+
+    // Default to preview unless the cell is empty (so a fresh cell is typable
+    // immediately).
+    if (editor.value.trim()) {
+      editor.style.display = "none";
+      renderHighlight();
+    } else {
+      rendered.style.display = "none";
+      autosize(editor);
+    }
+
+    rendered.addEventListener("click", enterEdit);
+    editor.addEventListener("blur", leaveEdit);
     editor.addEventListener("input", () => {
       this.hooks.onSourceChange(editor.value);
       autosize(editor);
@@ -87,6 +134,9 @@ export class CellRenderer {
         ev.preventDefault();
         this.hooks.onSourceChange(editor.value);
         this.hooks.onRun();
+      } else if (ev.key === "Escape") {
+        ev.preventDefault();
+        editor.blur();
       } else if (ev.key === "Tab") {
         ev.preventDefault();
         const start = editor.selectionStart;

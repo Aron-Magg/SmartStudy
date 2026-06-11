@@ -1,4 +1,7 @@
 import { spawn, SpawnOptions } from "child_process";
+import { promises as fs, constants as fsConstants } from "fs";
+import { delimiter, isAbsolute, join } from "path";
+import { homedir, platform } from "os";
 
 export interface RunResult {
   code: number;
@@ -79,4 +82,83 @@ export function spawnDetached(
     stdio: ["ignore", "pipe", "pipe"],
     detached: false,
   });
+}
+
+/**
+ * GUI-launched Obsidian doesn't inherit the user's shell PATH on Linux/macOS,
+ * so tools installed under ~/.local/bin or ~/.cargo/bin aren't visible to
+ * `spawn()` even though they work in a terminal. These are the locations we
+ * fall back to in addition to whatever PATH was inherited.
+ */
+export function commonInstallPaths(): string[] {
+  const home = homedir();
+  const candidates =
+    platform() === "win32"
+      ? [
+          join(home, "AppData", "Local", "Microsoft", "WinGet", "Links"),
+          join(home, "AppData", "Local", "Programs", "Python"),
+          join(home, ".cargo", "bin"),
+        ]
+      : [
+          join(home, ".local", "bin"),
+          join(home, ".cargo", "bin"),
+          join(home, "bin"),
+          "/usr/local/bin",
+          "/opt/homebrew/bin",
+          "/opt/local/bin",
+          "/usr/bin",
+        ];
+  return candidates;
+}
+
+export function augmentedPath(): string {
+  const inherited = (process.env.PATH ?? "").split(delimiter).filter(Boolean);
+  const extras = commonInstallPaths();
+  const seen = new Set<string>();
+  const merged: string[] = [];
+  for (const p of [...inherited, ...extras]) {
+    if (seen.has(p)) continue;
+    seen.add(p);
+    merged.push(p);
+  }
+  return merged.join(delimiter);
+}
+
+async function isExecutableFile(p: string): Promise<boolean> {
+  try {
+    const st = await fs.stat(p);
+    if (!st.isFile()) return false;
+    if (platform() === "win32") return true;
+    try {
+      await fs.access(p, fsConstants.X_OK);
+      return true;
+    } catch {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Look up an executable on the augmented PATH and return an absolute path, or
+ * null if not found. Absolute inputs are returned as-is when executable.
+ */
+export async function resolveCommand(cmd: string): Promise<string | null> {
+  if (!cmd) return null;
+  if (isAbsolute(cmd)) {
+    return (await isExecutableFile(cmd)) ? cmd : null;
+  }
+  const dirs = augmentedPath().split(delimiter).filter(Boolean);
+  const exts = platform() === "win32" ? [".exe", ".cmd", ".bat", ""] : [""];
+  const seen = new Set<string>();
+  for (const dir of dirs) {
+    for (const ext of exts) {
+      const candidate = join(dir, cmd + ext);
+      if (seen.has(candidate)) continue;
+      seen.add(candidate);
+      if (await isExecutableFile(candidate)) return candidate;
+    }
+  }
+  return null;
 }

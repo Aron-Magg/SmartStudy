@@ -7,7 +7,6 @@ import { NOTEBOOK_VIEW_TYPE, NotebookView } from "./NotebookView";
 export function registerNotebookFeature(plugin: SmartStudyPlugin): void {
   const servers = new JupyterServerService(
     plugin.venvService,
-    () => plugin.settings.uvPath,
     plugin.settings.jupyterIdleTimeoutMinutes,
   );
   const kernels = new KernelClient();

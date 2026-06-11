@@ -156,6 +156,7 @@ export class NotebookView extends TextFileView {
       const renderer = new CellRenderer(cell, idx, {
         filePath: this.file?.path ?? "",
         obsidianComponent: this,
+        app: this.app,
         onSourceChange: (newSource) => {
           cell.source = newSource;
           this.requestSave();

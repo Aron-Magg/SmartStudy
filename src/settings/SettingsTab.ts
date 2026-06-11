@@ -121,7 +121,9 @@ export class SmartStudySettingsTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("uv path")
-      .setDesc("Path to the `uv` binary. Default: `uv` (relies on PATH).")
+      .setDesc(
+        "Path to the `uv` binary. Default: `uv` — searches PATH plus ~/.local/bin, ~/.cargo/bin, /opt/homebrew/bin, /usr/local/bin. Set an absolute path if your install lives elsewhere.",
+      )
       .addText((t) =>
         t
           .setPlaceholder("uv")
@@ -134,8 +136,12 @@ export class SmartStudySettingsTab extends PluginSettingTab {
       .addButton((b) =>
         b.setButtonText("Probe").onClick(async () => {
           const r = await this.plugin.venvService.checkUvAvailable();
-          if (r.ok) new Notice(`uv ${r.version}`);
-          else new Notice(`uv not found: ${r.error}`);
+          if (r.ok) {
+            const resolved = await this.plugin.venvService.resolveUv();
+            new Notice(`uv ${r.version} (${resolved})`, 6000);
+          } else {
+            new Notice(`uv not found: ${r.error}`, 10000);
+          }
         }),
       );
 

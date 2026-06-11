@@ -42,7 +42,6 @@ export class JupyterServerService {
 
   constructor(
     private readonly venvService: VenvService,
-    private readonly getUvPath: () => string,
     idleTimeoutMinutes: number,
   ) {
     this.idleTimeoutMs = idleTimeoutMinutes * 60 * 1000;
@@ -148,12 +147,13 @@ export class JupyterServerService {
       "--ServerApp.allow_origin=*",
       "--ServerApp.allow_remote_access=False",
     ];
+    const uvBin = await this.venvService.resolveUv();
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       VIRTUAL_ENV: join(venvFolder, ".venv"),
-      PATH: `${join(venvFolder, ".venv", "bin")}:${process.env.PATH ?? ""}`,
+      PATH: `${join(venvFolder, ".venv", "bin")}:${this.venvService.spawnPath()}`,
     };
-    const proc = spawn(this.getUvPath(), args, {
+    const proc = spawn(uvBin, args, {
       cwd: venvFolder,
       env,
       stdio: ["ignore", "pipe", "pipe"],

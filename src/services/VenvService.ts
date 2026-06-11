@@ -1,7 +1,7 @@
 import { App, TFile, TFolder } from "obsidian";
 import { existsSync, promises as fs } from "fs";
 import { join, dirname } from "path";
-import { run, runOrThrow } from "../lib/shell";
+import { augmentedPath, resolveCommand, run, runOrThrow } from "../lib/shell";
 import { declaredPackages, parsePyProject } from "../lib/toml";
 import { dirSize } from "../lib/fs-size";
 
@@ -27,10 +27,40 @@ export interface VenvSummary {
 }
 
 export class VenvService {
+  private resolvedUvPath: string | null = null;
+  private resolvedFor: string | null = null;
+
   constructor(
     private readonly app: App,
     private getUvPath: () => string,
   ) {}
+
+  /**
+   * Resolve the configured uv command to an absolute path, searching both
+   * `process.env.PATH` and a few well-known install dirs (`~/.local/bin`,
+   * `~/.cargo/bin`, `/opt/homebrew/bin`, …). Result is cached until the
+   * configured path changes. Falls back to the configured value if nothing
+   * is found so error messages still say "uv" instead of empty string.
+   */
+  async resolveUv(): Promise<string> {
+    const configured = this.getUvPath();
+    if (this.resolvedFor === configured && this.resolvedUvPath) {
+      return this.resolvedUvPath;
+    }
+    const resolved = await resolveCommand(configured);
+    this.resolvedUvPath = resolved ?? configured;
+    this.resolvedFor = configured;
+    return this.resolvedUvPath;
+  }
+
+  /**
+   * Build a PATH env value that includes the same install dirs we search when
+   * resolving uv. Pass this to spawn() so uv (and the tools it dispatches to,
+   * like python) can find each other on GUI-launched Obsidian.
+   */
+  spawnPath(): string {
+    return augmentedPath();
+  }
 
   /** Walk up the filesystem from `startPath` until a `.venv/` directory is found. */
   findVenvForPath(startPath: string): VenvLocation | null {
@@ -86,25 +116,37 @@ export class VenvService {
     cwd: string,
     extraEnv: NodeJS.ProcessEnv = {},
   ): Promise<{ code: number; stdout: string; stderr: string }> {
-    return run(this.getUvPath(), args, { cwd, env: extraEnv });
+    const bin = await this.resolveUv();
+    return run(bin, args, { cwd, env: { PATH: this.spawnPath(), ...extraEnv } });
   }
 
   async checkUvAvailable(): Promise<{ ok: boolean; version?: string; error?: string }> {
     try {
-      const r = await run(this.getUvPath(), ["--version"], { timeoutMs: 5000 });
+      const bin = await this.resolveUv();
+      const r = await run(bin, ["--version"], {
+        timeoutMs: 5000,
+        env: { PATH: this.spawnPath() },
+      });
       if (r.code === 0) return { ok: true, version: r.stdout.trim() };
       return { ok: false, error: r.stderr || r.stdout };
     } catch (e) {
-      return { ok: false, error: e instanceof Error ? e.message : String(e) };
+      const msg = e instanceof Error ? e.message : String(e);
+      const hint = / ENOENT$/.test(msg)
+        ? ` — set the full path to uv in Smart Study settings (e.g. ${process.env.HOME ?? "~"}/.local/bin/uv).`
+        : "";
+      return { ok: false, error: `${msg}${hint}` };
     }
   }
 
   async pipList(venvFolder: string): Promise<Array<{ name: string; version: string }>> {
-    const r = await runOrThrow(
-      this.getUvPath(),
-      ["pip", "list", "--format", "json"],
-      { cwd: venvFolder, env: { VIRTUAL_ENV: join(venvFolder, ".venv") } },
-    );
+    const bin = await this.resolveUv();
+    const r = await runOrThrow(bin, ["pip", "list", "--format", "json"], {
+      cwd: venvFolder,
+      env: {
+        VIRTUAL_ENV: join(venvFolder, ".venv"),
+        PATH: this.spawnPath(),
+      },
+    });
     return JSON.parse(r.stdout) as Array<{ name: string; version: string }>;
   }
 

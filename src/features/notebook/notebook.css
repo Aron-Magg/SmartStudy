@@ -97,11 +97,15 @@
   min-width: 0;
 }
 
+.smart-cell-code-wrap {
+  position: relative;
+}
+
 .smart-cell-code {
   width: 100%;
   font-family: var(--font-monospace);
   font-size: 0.85em;
-  border: none;
+  border: 1px solid var(--background-modifier-border);
   outline: none;
   resize: none;
   background: var(--code-background);
@@ -110,6 +114,50 @@
   border-radius: 4px;
   min-height: 2em;
   line-height: 1.4;
+}
+
+.smart-cell-code:focus {
+  border-color: var(--interactive-accent);
+}
+
+.smart-cell-code-rendered {
+  cursor: text;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: border-color 120ms ease;
+}
+
+.smart-cell-code-rendered:hover {
+  border-color: var(--background-modifier-border);
+}
+
+/* Obsidian wraps the rendered code in its own .markdown-rendered + <pre>.
+   Strip the outer margins so the preview sits flush with the cell. */
+.smart-cell-code-rendered > .markdown-rendered,
+.smart-cell-code-rendered > div {
+  padding: 0;
+}
+
+.smart-cell-code-rendered pre {
+  margin: 0;
+  font-size: 0.85em;
+  line-height: 1.4;
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.smart-cell-code-rendered code {
+  font-family: var(--font-monospace);
+}
+
+.smart-cell-empty {
+  padding: 6px 8px;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  font-style: italic;
+  border: 1px dashed var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-secondary);
 }
 
 .smart-cell-md-rendered {
