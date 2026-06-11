@@ -91,8 +91,14 @@
   background: var(--background-modifier-hover);
 }
 
-.smart-cell-body {
+.smart-cell-main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.smart-cell-body {
   padding: 6px 10px;
   min-width: 0;
 }

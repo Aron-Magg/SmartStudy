@@ -45,12 +45,13 @@ export class CellRenderer {
     );
     this.makeBtn(toolbar, "✕", "Delete cell", this.hooks.onDelete);
 
-    const body = container.createDiv({ cls: "smart-cell-body" });
+    const main = container.createDiv({ cls: "smart-cell-main" });
+    const body = main.createDiv({ cls: "smart-cell-body" });
     if (this.cell.cell_type === "markdown") {
       this.renderMarkdownEditor(body);
     } else if (this.cell.cell_type === "code") {
       this.renderCodeEditor(body);
-      this.renderOutputs(container);
+      this.renderOutputs(main);
     } else {
       const raw = body.createEl("pre", { cls: "smart-cell-raw" });
       raw.textContent = cellSourceToString(this.cell.source);
