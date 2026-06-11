@@ -25,6 +25,7 @@ Jupyter notebooks with per-folder venvs, HTML and PDF lecture viewers, AI-genera
   - [From a GitHub release](#from-a-github-release)
   - [Via BRAT](#via-brat)
   - [From source](#from-source)
+- [Quick start](#quick-start)
 - [Configuration](#configuration)
 - [Development](#development)
 - [Releasing](#releasing)
@@ -88,6 +89,48 @@ The build emits `main.js`, `manifest.json`, and `styles.css` directly into `<VAU
 
 > [!NOTE]
 > If you omit `VAULT_PATH` and the build can't find a vault at `..`, it still produces `main.js` and `main.css` in the repo root. Copy them into your vault's plugin folder manually (rename `main.css` → `styles.css`).
+
+## Quick start
+
+### Embed a YouTube video
+
+In any note, paste a YouTube URL **on a line by itself**:
+
+```md
+Some notes about the lecture.
+
+https://www.youtube.com/watch?v=dQw4w9WgXcQ?t=1m30s
+
+More notes here.
+```
+
+Switch to **reading mode** — the link renders as a responsive 16:9 player. Inline links inside a sentence stay as plain links, so you control where embeds appear.
+
+Supported URL shapes:
+
+| Form | Example |
+| --- | --- |
+| Long | `https://www.youtube.com/watch?v=VIDEO_ID` |
+| Short | `https://youtu.be/VIDEO_ID` |
+| Shorts | `https://www.youtube.com/shorts/VIDEO_ID` |
+| Live | `https://www.youtube.com/live/VIDEO_ID` |
+| Embed | `https://www.youtube.com/embed/VIDEO_ID` |
+| Mobile | `https://m.youtube.com/watch?v=VIDEO_ID` |
+
+Timestamps (`?t=90`, `?t=1m30s`, `?t=1h2m3s`) and playlists (`&list=...`) are honoured.
+
+There's also an **Insert YouTube embed at cursor** command in the command palette.
+
+> [!NOTE]
+> Embeds render in **reading mode** only. Live preview keeps the URL as a plain link.
+
+### Open a notebook
+
+Click any `.ipynb` file in the file explorer. The plugin spawns a per-folder `uv` venv on first run and reuses it for subsequent cells.
+
+### Generate a quiz
+
+Open a note with study material and run **Smart Study: Generate quiz** from the command palette. The quiz is saved to the configured data folder and shows up in the Quiz Library.
 
 ## Configuration
 
